@@ -1,0 +1,32 @@
+version: "1"
+
+package:
+  id: org.deepin.portal-demo
+  name: linglong portal demo
+  version: 0.0.0.1
+  kind: app
+  description: |
+    xdg desktop protal demo.
+
+base: org.deepin.base/25.0.0
+runtime: org.deepin.runtime.dtk/25.2.0
+
+command:
+  - /opt/apps/org.deepin.portal-demo/files/bin/portal-demo
+
+build: |
+  set -x
+  bash ./install_dep linglong/sources "${PREFIX}"
+  cmake -B linglong-build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release
+  cmake --build linglong-build -- -j$(nproc)
+  cmake --install linglong-build
+
+sources:
+# linglong:gen_deb_source sources amd64 https://pools.uniontech.com/deepin-beige beige main community
+# linglong:gen_deb_source install wayland-protocols, xdg-desktop-portal-dev
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/w/wayland-protocols/wayland-protocols_1.36-1deepin1_all.deb
+    digest: ab712636f1445df565a092a03bb1fb5eea64b5d69f21bfd44807e50f1494db60
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/x/xdg-desktop-portal/xdg-desktop-portal-dev_1.18.4-1_all.deb
+    digest: 2b19ed624766fc9fa848ed934ad287c4c0b567e55ac726767630b71fba1a9ec9
