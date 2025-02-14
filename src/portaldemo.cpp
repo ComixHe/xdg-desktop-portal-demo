@@ -1,4 +1,5 @@
 #include "portaldemo.h"
+#include <QComboBox>
 #include <QDBusConnection>
 #include <QDBusMessage>
 #include <QDBusPendingCallWatcher>
@@ -42,19 +43,35 @@ PortalDemo::PortalDemo()
     : QMainWindow(nullptr), m_xdgExporter(new XDGExporterV2),
       m_xdgExported(m_xdgExporter->exportWidget(this)) {
   auto *centralWidget = new QWidget(this);
-  auto *grid = new QGridLayout(centralWidget);
+  auto *vert = new QVBoxLayout(centralWidget);
 
   auto *shotButton = new QPushButton();
   shotButton->setText("Request screenshot");
   connect(shotButton, &QPushButton::clicked, this,
           &PortalDemo::requestScreenShot);
-  grid->addWidget(shotButton);
+  vert->addWidget(shotButton);
 
   auto *camButton = new QPushButton();
   camButton->setText("Request Camera");
   connect(camButton, &QPushButton::clicked, this,
           &PortalDemo::requestAccessCamera);
-  grid->addWidget(camButton);
+  vert->addWidget(camButton);
+
+  auto *hori = new QHBoxLayout();
+  auto *box = new QComboBox();
+  box->addItem("camera");
+  box->addItem("speaker");
+  box->addItem("microphone");
+  auto *reqBtn = new QPushButton();
+  reqBtn->setText("Request Device Access");
+  connect(reqBtn, &QPushButton::clicked, [box, this] {
+    auto devices = box->currentText();
+    requestDeviceAccess({devices});
+  });
+
+  hori->addWidget(box);
+  hori->addWidget(reqBtn);
+  vert->addLayout(hori);
 
   setCentralWidget(centralWidget);
 }
@@ -65,15 +82,16 @@ void PortalDemo::requestScreenShot() {
       QLatin1String("org.freedesktop.portal.Screenshot"),
       QLatin1String("Screenshot"));
 
-  qInfo() << "parent_window:" << parentWindowId();
-  message.setArguments(
-      {parentWindowId(), QVariantMap{{QLatin1String("interactive"), true},
-                                     {"handle_token", getRequestToken()}}});
+  auto winID = parentWindowId();
+  qInfo() << "parent_window:" << winID;
+  auto token = getRequestToken();
+  message.setArguments({winID, QVariantMap{{QLatin1String("interactive"), true},
+                                           {"handle_token", token}}});
   auto ret = QDBusConnection::sessionBus().asyncCall(message);
 
   auto *watcher = new QDBusPendingCallWatcher(ret);
   connect(watcher, &QDBusPendingCallWatcher::finished, this,
-          [this](QDBusPendingCallWatcher *watcher) {
+          [this, token](QDBusPendingCallWatcher *watcher) {
             watcher->deleteLater();
             QDBusPendingReply<QDBusObjectPath> reply = watcher->reply();
             if (reply.isError()) {
@@ -178,16 +196,47 @@ void PortalDemo::gotResponseAccessCamera(
   ::close(pipeWireFD);
 }
 
-// bool PortalDemo::requestDeviceAccess(const QStringList &devices) {
-//   QDBusMessage message = QDBusMessage::createMethodCall(
-//       desktopPortalService(), desktopPortalPath(),
-//       "org.freedesktop.portal.Device", "AccessDevice");
-//   message.setArguments(
-//       {::getpid(), devices, QVariantMap{{"handle_token",
-//       getRequestToken()}}});
+void PortalDemo::requestDeviceAccess(const QStringList &devices) {
+  QDBusMessage message = QDBusMessage::createMethodCall(
+      desktopPortalService(), desktopPortalPath(),
+      "org.freedesktop.portal.Device", "AccessDevice");
+  auto token = getRequestToken();
+  message.setArguments({static_cast<uint32_t>(::getpid()), devices,
+                        QVariantMap{{"handle_token", token}}});
+  auto ret = QDBusConnection::sessionBus().asyncCall(message);
+  auto *watcher = new QDBusPendingCallWatcher(ret);
+  connect(watcher, &QDBusPendingCallWatcher::finished, this,
+          [this](QDBusPendingCallWatcher *watcher) {
+            watcher->deleteLater();
+            QDBusPendingReply<QDBusObjectPath> reply = watcher->reply();
+            if (reply.isError()) {
+              qCritical() << "Error: " << watcher->error().message();
+              return;
+            }
+            qInfo() << "request path:" << reply.value().path();
 
-//   Q ret = QDBusConnection::sessionBus().asyncCall(message);
-// }
+            QDBusConnection::sessionBus().connect(
+                desktopPortalService(), reply.value().path(),
+                portalRequestInterface(), portalResponseSignal(), this,
+                SLOT(gotResponseDeviceAccess(uint32_t, QVariantMap)));
+          });
+}
+
+void PortalDemo::gotResponseDeviceAccess(uint32_t response,
+                                         [[maybe_unused]] QVariantMap result) {
+  qInfo() << __PRETTY_FUNCTION__;
+  if (response == 1) {
+    qInfo() << "user cancelled";
+    return;
+  }
+
+  if (response == 2) {
+    qInfo() << "ended in some other way";
+    return;
+  }
+
+  qInfo() << "device access granted";
+}
 
 int PortalDemo::requestOpenPipeWireRemote() {
   auto message = QDBusMessage::createMethodCall(

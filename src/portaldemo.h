@@ -18,7 +18,8 @@ public Q_SLOTS:
 
   int requestOpenPipeWireRemote();
 
-  // bool requestDeviceAccess(const QStringList &devices);
+  void requestDeviceAccess(const QStringList &devices);
+  void gotResponseDeviceAccess(uint32_t response, QVariantMap result);
 
 private:
   [[nodiscard]] QString parentWindowId() const;
