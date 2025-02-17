@@ -3,10 +3,14 @@
 #include <QDBusConnection>
 #include <QDBusMessage>
 #include <QDBusPendingCallWatcher>
+#include <QDesktopServices>
 #include <QGridLayout>
 #include <QGuiApplication>
 #include <QPushButton>
+#include <QUrl>
 #include <QWidget>
+#include <fcntl.h>
+#include <gstreamer-1.0/gst/gst.h>
 #include <qdbusextratypes.h>
 #include <qdbuspendingreply.h>
 
@@ -74,6 +78,8 @@ PortalDemo::PortalDemo()
   vert->addLayout(hori);
 
   setCentralWidget(centralWidget);
+
+  gst_init(nullptr, nullptr);
 }
 
 void PortalDemo::requestScreenShot() {
@@ -126,6 +132,9 @@ void PortalDemo::gotResponseScreenShot(uint32_t response,
   }
 
   qInfo() << "screenShot under" << uri.toString();
+  if (!QDesktopServices::openUrl(uri.toUrl())) {
+    qCritical() << "failed to open url:" << uri.toString();
+  }
 }
 
 void PortalDemo::requestAccessCamera() {
@@ -192,8 +201,32 @@ void PortalDemo::gotResponseAccessCamera(
   }
 
   qInfo() << "open pipewire remote successfully";
+  g_autoptr(GError) err{nullptr};
+  QString gstLaunch =
+      QString("pipewiresrc fd=%1 ! videoconvert ! xvimagesink").arg(pipeWireFD);
+  auto *element = gst_parse_launch(gstLaunch.toUtf8(), &err);
+  if (element == nullptr) {
+    qCritical() << "failed to launch:" << err->message;
+    ::close(pipeWireFD);
+    return;
+  }
 
-  ::close(pipeWireFD);
+  auto ret = gst_element_set_state(element, GST_STATE_PLAYING);
+  switch (ret) {
+  case GST_STATE_CHANGE_FAILURE:
+    qCritical() << "failed to play";
+    ::close(pipeWireFD);
+    return;
+  case GST_STATE_CHANGE_SUCCESS:
+    qInfo() << "play success";
+    break;
+  case GST_STATE_CHANGE_ASYNC:
+    qInfo() << "play async";
+    break;
+  case GST_STATE_CHANGE_NO_PREROLL:
+    qInfo() << "play no preroll";
+    break;
+  }
 }
 
 void PortalDemo::requestDeviceAccess(const QStringList &devices) {
@@ -224,7 +257,6 @@ void PortalDemo::requestDeviceAccess(const QStringList &devices) {
 
 void PortalDemo::gotResponseDeviceAccess(uint32_t response,
                                          [[maybe_unused]] QVariantMap result) {
-  qInfo() << __PRETTY_FUNCTION__;
   if (response == 1) {
     qInfo() << "user cancelled";
     return;
@@ -249,8 +281,8 @@ int PortalDemo::requestOpenPipeWireRemote() {
     qCritical() << "failed to open pipewire remote";
     return -1;
   }
-  auto value = reply.value();
-  auto fd = ::dup(value.fileDescriptor());
+
+  auto fd = ::dup(reply.value().fileDescriptor());
   if (fd == -1) {
     qCritical() << "dup failed:" << ::strerror(errno);
     return -1;

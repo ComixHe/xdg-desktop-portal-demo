@@ -12,7 +12,7 @@ base: org.deepin.base/25.0.0
 runtime: org.deepin.runtime.dtk/25.2.0
 
 command:
-  - /opt/apps/org.deepin.portal-demo/files/bin/portal-demo
+  - start.sh
 
 build: |
   set -x
@@ -20,13 +20,888 @@ build: |
   cmake -B linglong-build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release
   cmake --build linglong-build -- -j$(nproc)
   cmake --install linglong-build
+  echo "#!/usr/bin/env bash" >> start.sh
+  echo -e "export GST_PLUGIN_PATH=/opt/apps/${LINGLONG_APPID}/files/lib/${TRIPLET}/gstreamer-1.0" >> start.sh
+  echo "exec /opt/apps/org.deepin.portal-demo/files/bin/portal-demo" >> start.sh
+  chmod +x start.sh
+  mv start.sh "${PREFIX}"/bin
 
 sources:
 # linglong:gen_deb_source sources amd64 https://pools.uniontech.com/deepin-beige beige main community
-# linglong:gen_deb_source install wayland-protocols, xdg-desktop-portal-dev
+# linglong:gen_deb_source install wayland-protocols, xdg-desktop-portal-dev, libgstreamer1.0-dev, gstreamer1.0-pipewire, gstreamer1.0-plugins-base,gstreamer1.0-plugins-good,gstreamer1.0-x
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/a/adduser/adduser_3.131-1deepin2_all.deb
+    digest: 7165c1918cafcb0e026649217b0ae58a77a143a6b39650313cdfc29fd1087492
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/d/dbus/dbus-bin_1.14.10-3_amd64.deb
+    digest: 703c756370944c7e301d5c855350dd66b8df46bdae735399138afb9dc3fffa55
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/d/dbus-broker/dbus-broker_29-3_amd64.deb
+    digest: 68ff1baedb2f4ced1ff5d2f9c3e59bd21e741b7710931e0539c89ef5951df8ba
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/d/dbus/dbus-daemon_1.14.10-3_amd64.deb
+    digest: 85212b9f616638ca22db78bcd022e90b640aad659a6c520b178d368947599e7d
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/d/dbus/dbus-session-bus-common_1.14.10-3_all.deb
+    digest: 2f9dc2fb500df63edb46c3121e6540d838047e3a9e9c5ec0cbe05649b7da3f30
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/d/dbus/dbus-system-bus-common_1.14.10-3_all.deb
+    digest: 2768fa6a52a3a0162988d735bd2cc7af849d3984fa9567c50092176ca36f9aa8
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/d/dbus/dbus-user-session_1.14.10-3_amd64.deb
+    digest: 98dc33fb51b8eb00ad61f7dd199d3431d021c67fcdbd7e047b640a6d3fe4a636
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/d/dconf/dconf-gsettings-backend_0.40.0-2_amd64.deb
+    digest: 3d80cdcf5a1430426c402bfd90745303d879a7b860ef4d6f6e2df116ee4a386b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/d/dconf/dconf-service_0.40.0-2_amd64.deb
+    digest: e0191ee7e4fac0aa946ee39591ccf6137ac7d9fa7251c7a7abc1740cea2146ff
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/d/debconf/debconf_1.5.79-deepin_all.deb
+    digest: ded6aaa7927ae27337ceb23d49391b4c7ec460a00ba692020e8f4e28388f345f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/l/lvm2/dmsetup_1.02.196-1_amd64.deb
+    digest: 665562c1473529846f741f2fc9de4dbb799ffc4f217dee4429f8c91f507498d6
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/d/dpkg/dpkg_1.22.6deepin3_amd64.deb
+    digest: f9c758ed0204b1fe515c70b6419f80fdeb4773ac3f498a79ea1e6a6e6971157f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/f/fontconfig/fontconfig-config_2.14.2-6_amd64.deb
+    digest: ca239a17d79f439fc02525b3b3c83d6cdf0be1a90c6aa6ec6c19b2b92b0d6586
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/f/fontconfig/fontconfig_2.14.2-6_amd64.deb
+    digest: 1018476410ec372cb5f96e3a4d4b4d51781c613212eb71f91bcc939c2de0e8f2
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/f/fonts-noto/fonts-croscore_20201225-deepin_all.deb
+    digest: afbaf120869a08aa7dd14da9ad014de48a751aa4330534b531410bb86c411b55
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/f/fonts-dejavu/fonts-dejavu-core_2.37-deepin_all.deb
+    digest: 5982963d05dbf4efa009c3ab6db3576a03f680199d75d7d5edda89c55def912c
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/f/fonts-freefont/fonts-freefont-otf_20120503-10_all.deb
+    digest: c66666da94b9a0477351ee9d6d7a247a0a3c842e428da770991b45f03be2ee72
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/f/fonts-freefont/fonts-freefont-ttf_20120503-10_all.deb
+    digest: 79b23c3945d4628463672a804a0e81bc4c262ef87cb6316afb40167a50bc3145
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/f/fonts-liberation/fonts-liberation_2.1.5-3_all.deb
+    digest: 9285213fd8d6515bc6c1be5b810bf39918a668a17024a9fd3541879ce7fb5344
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/f/fonts-noto/fonts-noto-core_20201225-deepin_all.deb
+    digest: fa09d95f516c498d55e516d549b8ee41d9a7b6f17cdf0bb4b43744d672ce1366
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/t/tex-gyre/fonts-texgyre_20180621-3.1_all.deb
+    digest: f66d6f798c4b99d8490558cc8209c069b0fe5577c11378c0e01f9e87ddf10824
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/f/fonts-urw-base35/fonts-urw-base35_20200910-7_all.deb
+    digest: 4800c0b08fbeac0335f1e23df2d41528a242383324c256ebece00c8f438eefbd
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gcc-13/gcc-13-base_13.2.0-3deepin3_amd64.deb
+    digest: d9c679af2dd0d3878d823075b2fb1433618bd3227cbae336e11d8e89274b5ab1
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/glib2.0/gir1.2-glib-2.0_2.80.1-1deepin1_amd64.deb
+    digest: 19242756d4cc8125e5b18e34319ba4f4445aeff9bc3c1560e9dc5a87fcacb0d2
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gstreamer1.0/gir1.2-gstreamer-1.0_1.24.6-1_amd64.deb
+    digest: d4fcd791ae4c9f0565a07fddd1f09d6dbd275c6b4c49b68fa5a31704ffa51c5f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/glib-networking/glib-networking-common_2.78.0-1_all.deb
+    digest: 94bfaef9228159f8a2f366b9962e5bd82c9ddb53228b161d62c6f5d48ecf1c3c
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/glib-networking/glib-networking-services_2.78.0-1_amd64.deb
+    digest: 1b12a72f80bd0a62d22b922ab3c8b90bdc11ac4bf819f955cccae09853755c21
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/glib-networking/glib-networking_2.78.0-1_amd64.deb
+    digest: 3becf1edd62d0fec815062fb84cf821dea5801f946e5191bab534e5d28f8d1d3
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gsettings-desktop-schemas/gsettings-desktop-schemas_47.1-1_all.deb
+    digest: f87ebb3a3d4d6557f779dd83909a6aa79282e7085aacf756fcc828bae36526eb
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pipewire/gstreamer1.0-pipewire_1.2.5-1deepin4_amd64.deb
+    digest: e069dded167787ce5d91e7cf5ade723e21c886db7efdcf4b6460d5fee227155e
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gst-plugins-base1.0/gstreamer1.0-plugins-base_1.24.6-1_amd64.deb
+    digest: 3a15070887e53d04d0866eded24713e905f78309ead3da0bf4710654406a082f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gst-plugins-good1.0/gstreamer1.0-plugins-good_1.24.6-1deepin1+rb1_amd64.deb
+    digest: 7cf975e4a6a3408354939c982a922698d22c9c59f9e9cb6a044b7e2257f121e8
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gst-plugins-base1.0/gstreamer1.0-x_1.24.6-1_amd64.deb
+    digest: 2b0352a29b52eaa392c50c964fcbdaf6b8ced321b4aab9ddb525362ed783e25e
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/i/init-system-helpers/init-system-helpers_1.66_all.deb
+    digest: 60bb52a4118d514e4d480707329a798ae21d135a96ddb9811d7e6bd0e7f2101f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/i/iso-codes/iso-codes_4.16.0-1_all.deb
+    digest: acd8d976f1a757da000d9ea9405fdf80194a6275fc93fc472e1df1dfa5b301a5
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/a/aalib/libaa1_1.4p5-50_amd64.deb
+    digest: 7a3de1da3ffd08698978bfab35bb32d959fa479ccf8b30d35fc9f0723fd7e973
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/a/acl/libacl1_2.3.1-1_amd64.deb
+    digest: f06e936eb913b8e9271c17e6d8b94d9e4f0aa558d7debdc324c9484908ee8dc8
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/a/apparmor/libapparmor1_3.0.13-2_amd64.deb
+    digest: 03d19b350ee32c5462bced7877432a39a60c71f0cdfe945ec2a63a1ea948b573
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/a/alsa-lib/libasound2-data_1.2.12-1deepin1_all.deb
+    digest: 4990cab9125078d6b8ef1caaeabb597ecda80949d02d251903fd496272f59fbf
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/a/alsa-lib/libasound2_1.2.12-1deepin1_amd64.deb
+    digest: 13c36d1ba89268f03f75be93ec321e393f377421f6867bfc22f243be102460b3
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/liba/libasyncns/libasyncns0_0.8-deepin1_amd64.deb
+    digest: fd200e6260ccf2169de1a42591f730bfda6ff0e64a80c8eb4bc167e875cc9fcd
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/a/audit/libaudit-common_3.1.2-2_all.deb
+    digest: 5fcb4f437655bbe179c280be56fdc879d317f6ea6f3a6b865c9fa01a314fc8ca
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/a/audit/libaudit1_3.1.2-2_amd64.deb
+    digest: 32e957d5e55d9bf6ea272c17c843feee2d92ad95c82cd81a8477c4c87dd65e5a
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/a/avahi/libavahi-client3_0.8-5_amd64.deb
+    digest: 28bdf7a8c0529f6397921fe59358e8d94cf3d3f1e498f09e9b4035254ee15baf
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/a/avahi/libavahi-common-data_0.8-5_amd64.deb
+    digest: 5fdc5ef24ff229630b683db663cb26e108aa719fd288b808c4607c680de52c75
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/a/avahi/libavahi-common3_0.8-5_amd64.deb
+    digest: a966db72e688d76b06a665dfe894c66faae8d2033cf5dd8776bf56f41912035f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/liba/libavc1394/libavc1394-0_0.5.4-5_amd64.deb
+    digest: 27a869ad9b0f6673fe4c6e6dc6aae04f58b550fa9f2de4c9c9ba64cda6e9937a
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/u/util-linux/libblkid-dev_2.39.3-6deepin1_amd64.deb
+    digest: e9a309e022e159bcd90fdf4b710e8a6597368a234fd3d102af67cf471ae16703
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/u/util-linux/libblkid1_2.39.3-6deepin1_amd64.deb
+    digest: 1c0d4c5b5efec4a282652df9793083bdd4e7fc0ed634dc76f3bf6ee700dfa8c4
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/b/brotli/libbrotli1_1.1.0-2_amd64.deb
+    digest: c90c041d2069cc78a80e07d62ce3e251306a81b23f9b95fa35a65ce7af87ad04
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libb/libbsd/libbsd0_0.11.7-4_amd64.deb
+    digest: 40e8755d2d6de7ee5c90483c74d586c6270f088eaf630acdc32bc848c09cedfe
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/b/bzip2/libbz2-1.0_1.0.8-deepin1_amd64.deb
+    digest: 42c04d805408bc1f10872e8394e26d3ff1bc6aa3477efac7e94612f9b7b2d972
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/glibc/libc-dev-bin_2.38-6deepin7_amd64.deb
+    digest: 2fb2db05a0e86ea279c81e5c4a3bbbcc8931d7fb54296748853061e44e6ae0f3
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/glibc/libc6-dev_2.38-6deepin7_amd64.deb
+    digest: 6659347f85e23081d30ea809ceba563fd696bd21f8831a5e37115131864a8f35
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/glibc/libc6_2.38-6deepin7_amd64.deb
+    digest: d8928f5bfe6dfaa9b64ea2354c9d933c51805aa137e52d834efdd4a1b220f031
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libc/libcaca/libcaca0_0.99.beta20-4deepin0_amd64.deb
+    digest: eef9bf124cff1a9617eb134d328b3862d6e1396783fbfe922b9cead4637fb9d5
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/c/cairo/libcairo-gobject2_1.18.0-1_amd64.deb
+    digest: 58dc2ae2cd25e9ba5e45c571fd4c0fe77450cd98128dc28c2183b7434aa4d914
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/c/cairo/libcairo2_1.18.0-1_amd64.deb
+    digest: cbf026997021678131d706318414a498b8054291185be3fa095fe8ea9fe162fc
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libc/libcap-ng/libcap-ng0_0.8.4-2deepin1_amd64.deb
+    digest: 7efab9f53195e096021a501e1de215169c3be182d2a2cbdda8d561e68584860e
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libc/libcap2/libcap2-bin_2.66-5_amd64.deb
+    digest: 61428561e0fdf5ac64fb66b788f1bcf25bb8c2fd513688c27de843cc1ca2b80a
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libc/libcap2/libcap2_2.66-5_amd64.deb
+    digest: f4f581c5ed9c6576ff284117ee51ae8b4e47e6799d71fabc7c0aa2d3a260752a
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/c/capstone/libcapstone4_4.0.2-3-deepin1_amd64.deb
+    digest: 6b82dd7f3f4ff2bc1c59d2cd7180600bc9cafa1ec8752689e301ab04dd4e9713
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/c/cdparanoia/libcdparanoia0_3.10.2+debian-14_amd64.deb
+    digest: bf47490b840a1f50b2a98f453dc3ec61c3f52913e8ca6f74533100c8bd48ac2b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/e/e2fsprogs/libcom-err2_1.47.0-2deepin1_amd64.deb
+    digest: 016e7e4d9ff3fa97f1631669aba86aebe7bd1d1c8d04fd8ec66b38c87cccab05
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libc/libconfig/libconfig++9v5_1.5-0.4_amd64.deb
+    digest: c5bd167ffd5278f68ab15ef3ac9813255e40b97b2e2d83f3047951ea8684bee8
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxcrypt/libcrypt-dev_4.4.36-5_amd64.deb
+    digest: 3505f9548808b3e2e06dac00d3c674a023815c011ab6ddad1bc85283e899adc6
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxcrypt/libcrypt1_4.4.36-5_amd64.deb
+    digest: a7af8c9a2b767781d83f60fa32553f6a713569a0f7c4666e68dab41c46feaf1c
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/c/cryptsetup/libcryptsetup12_2.7.5-1deepin2_amd64.deb
+    digest: 432092c0719b0112362642094336cd4ff98a18c7ae9576ef9f113d7e1f54a21c
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libd/libdatrie/libdatrie1_0.2.13-2_amd64.deb
+    digest: 07aa08beb07e987772c31ef3865ef65b8ea37069c7c840c8a2a56c6d0019df07
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/d/db5.3/libdb5.3_5.3.28+dfsg1-0.8deepin0_amd64.deb
+    digest: 98830ff429c7212767f0de4d239870f1936b37527ce365287de30eb8276a8330
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/d/dbus/libdbus-1-3_1.14.10-3_amd64.deb
+    digest: 1dff3a63259f14e7de7c4502e7083f7077b30a274f09d195176d566406b1b827
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/d/dconf/libdconf1_0.40.0-2_amd64.deb
+    digest: 80248ca6b6f089cbf601cf9f5fe5f65f875a291c8413e1c93067dea6ae746f79
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libd/libdeflate/libdeflate0_1.18-1_amd64.deb
+    digest: 1b411007d982c5f2f2a6d1e2d0af7a85cbc274770e533fbd895fc54956a995ba
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/l/lvm2/libdevmapper1.02.1_1.02.196-1_amd64.deb
+    digest: 60dc1a57537fa9ba5431e38c8573c3bb37a5a5762fcf45f02666cd2744a6a675
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libd/libdrm/libdrm-common_2.4.123-1_all.deb
+    digest: b8289eaa6341a8493f4c191a45165fe944248da69f675d09005a29058e7ae5a6
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libd/libdrm/libdrm2_2.4.123-1_amd64.deb
+    digest: c2f1676c3335ab76ff829190951052abef661b735f2ddfefdb8d6c0698c41756
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libd/libdv/libdv4_1.0.0-14_amd64.deb
+    digest: 4bc16faa05512b3a581c8364f8469be8532c8cb561b76dfb9712b3f68e23f1fe
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/e/elfutils/libdw-dev_0.191-1deepin2_amd64.deb
+    digest: 0e34dd56f22f8c96a1436bd717936accc0a41848a942eaad2b6c73ea81f96095
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/e/elfutils/libdw1_0.191-1deepin2_amd64.deb
+    digest: 195f88b359cb82e017c6960bc4b43ae27d044ac10a367684e07efdbefefab190
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/e/elfutils/libelf-dev_0.191-1deepin2_amd64.deb
+    digest: 361398bf88821f790aeb9021f59f23b1f47b578c03b4c067a1bf511bcbe6913f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/e/elfutils/libelf1_0.191-1deepin2_amd64.deb
+    digest: 27dd39d5858cff9969ff58d01f7fe44a846dc9e9477898e250633c7b96c72757
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/e/expat/libexpat1_2.5.0-2_amd64.deb
+    digest: 5be8be254b82a58e77549b1784520f1f7ebb395b57982f87524533e1f061f75a
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/u/util-linux/libfdisk1_2.39.3-6deepin1_amd64.deb
+    digest: 3ae1fd2b3592bb37f30d0c96082091589bfb83f50ccba23c3692ffd114213254
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libf/libffado/libffado2_2.4.9-1_amd64.deb
+    digest: 649b491f67182a1ae556631e8debd3602fc48412e4e6f2b5a33a633872e94740
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libf/libffi/libffi-dev_3.4.6-1_amd64.deb
+    digest: eadc61825e77bad028fd5eff398ac0e13da7a08870261058525d3f620d90cb7b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libf/libffi/libffi8_3.4.6-1_amd64.deb
+    digest: daa2aeb5a23c7dea09b2f16b94d15fa6f015ad5ff8c3db15bd0ab890fc920dd2
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libf/libfile-find-rule-perl/libfile-find-rule-perl_0.34-1_all.deb
+    digest: 8ebc94473bf3381e34408415da523e390c2fb3be418f3c298deb6bc82373ded5
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/f/flac/libflac8_1.3.3-2_amd64.deb
+    digest: 176363ec9b23f4b24a1bf8f8d0523eab3a34bd5b5d995c7efa2575f5371f749b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/f/fontconfig/libfontconfig1_2.14.2-6_amd64.deb
+    digest: c4c5fa416637a08cf925dd4ec0115631b69e4f2f5f46f2094f3239167f781085
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libf/libfontenc/libfontenc1_1.1.4-1_amd64.deb
+    digest: 758a94a3acf10d671cc056981255d2bca91e42d74e46edb27f3c89b9c5d5d3cf
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/f/freetype/libfreetype6_2.13.2+dfsg-1deepin1_amd64.deb
+    digest: 362fcb4c7c381338fd78bfa018b17b25f00596afb9c7d99c28b075944b20eb2b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/f/fribidi/libfribidi0_1.0.8-2_amd64.deb
+    digest: cb0bd9ae5b3c84a26fa8de5a614b557caa3e312fb93b35c46e551c8135275e90
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gcc-13/libgcc-s1_13.2.0-3deepin3_amd64.deb
+    digest: bfe5009a5995e8e9d8206188394c5422b9c7fbbbea954bc632abab9e6699f35c
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libg/libgcrypt20/libgcrypt20_1.10.3-2_amd64.deb
+    digest: f377a741b54094b2b71a461878bf012c8d602d9af146be9826ce058767e396d5
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gdbm/libgdbm-compat4_1.22-1_amd64.deb
+    digest: 35bdaf12b3222875708f4f3967f4517897062a05730f38893695d6344e4f496e
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gdbm/libgdbm6_1.22-1_amd64.deb
+    digest: af88f48a9978a03543cb1bb5170ef936fb80595c8621d73137ba47bfef0de0d3
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gdk-pixbuf/libgdk-pixbuf-2.0-0_2.42.10+dfsg-3_amd64.deb
+    digest: ae9e961d452cbbcb9b8be26835441805f05888a1840799162c2c1ccff924f9a9
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gdk-pixbuf/libgdk-pixbuf2.0-common_2.42.10+dfsg-3_all.deb
+    digest: bcf7a388b33a76d765b3db4dc10fc0a946086bc7409228898ffbcc522e9dffc9
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/glib2.0/libgirepository-2.0-0_2.80.1-1deepin1_amd64.deb
+    digest: 6340c9628c7bcfda4c6826a49c52bc8bf28bfb8d12c163eb19ebde7b0ad61578
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/glib2.0/libglib2.0-0_2.80.1-1deepin1_amd64.deb
+    digest: 33857078b63370d9edfbceec5a4f8d159db6f75da9f486dd12c97711598f43de
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/glib2.0/libglib2.0-bin_2.80.1-1deepin1_amd64.deb
+    digest: a90fbe965ef03785f21e55dc04d550243495e96ba47107ddf0874bd0bde8a416
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/glib2.0/libglib2.0-data_2.80.1-1deepin1_all.deb
+    digest: 4e75a1c9e56c81ed2c1737e3e6fe590163a77ff45179101a4fcfb90b4c0d135d
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/glib2.0/libglib2.0-dev-bin_2.80.1-1deepin1_amd64.deb
+    digest: 47e6ec3f082c09540ec0ce8ec0358e9d0d28ea7822e9e7cd5000672f6fd35adb
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/glib2.0/libglib2.0-dev_2.80.1-1deepin1_amd64.deb
+    digest: f6e2df667c442e8ad0305ec62c85227aead61ff85d591ef32ec9de31d086a74e
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/glibmm2.4/libglibmm-2.4-1v5_2.66.6-1deepin1+rb1_amd64.deb
+    digest: b8dad9e22ca885ff68f7caad2cff65fcb727b118cce08de18483306f7834ae51
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gmp/libgmp10_6.3.0+dfsg-2deepin0_amd64.deb
+    digest: a809596d1ce3a18f2965759b2443fdcb83edd50ae143d61c60cd26862b57850b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gnutls28/libgnutls30_3.7.9-2_amd64.deb
+    digest: d56ddf6802b16bc9c2ba21d8c5d6312e0620c9b96dfc11f8345d42c8233e9e74
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libg/libgpg-error/libgpg-error0_1.47-3_amd64.deb
+    digest: c7c00dbad22e7c549a25c147e3d471fae76d0c22d479c0de61aac4cf60e97f36
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gpm/libgpm2_1.20.7-9_amd64.deb
+    digest: c00c715e31122bef570e1ffc5fbb122e4f0fc54f717b40dd1866aa577ca69339
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/graphite2/libgraphite2-3_1.3.14-2_amd64.deb
+    digest: b4697179666eb012313127a7ff04d286f427b49523f50ada6d593694030c0b51
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/k/krb5/libgssapi-krb5-2_1.20.1-5_amd64.deb
+    digest: dfa250b0e4ecb5b3c359f49161b460b0139c38b1592b6d6538395855f6c952f1
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gst-plugins-base1.0/libgstreamer-plugins-base1.0-0_1.24.6-1_amd64.deb
+    digest: 9c73c5986475d18685e16d29ff472fb79fe47bdefa07625b47ef64937f4e4832
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gstreamer1.0/libgstreamer1.0-0_1.24.6-1_amd64.deb
+    digest: 2259037809d8a9295579a9d8d046a0889dfdf6777d8a9cc514dd94879cd66cb9
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gstreamer1.0/libgstreamer1.0-dev_1.24.6-1_amd64.deb
+    digest: 17465f958491307202610031676d2de37e9461f60b5b737962bfa600928c745a
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libg/libgudev/libgudev-1.0-0_238-2deepin1_amd64.deb
+    digest: fb9f1c72e40fd7fece5eab37c9eb473bf3d19c84fb808512d60af3bc909a8c5f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/h/harfbuzz/libharfbuzz0b_8.0.1-1+rb1_amd64.deb
+    digest: 29f8f51877821f22adc742cab010c0f627ff4db8ffb03a1479441c5f2061f9e3
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/n/nettle/libhogweed6_3.7.3-1_amd64.deb
+    digest: 0557f0e34a15444b6792c2726b5d1eb48f9ea8cd42bc7f4d697081e804ced558
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/i/icu/libicu74_74.2-1deepin0_amd64.deb
+    digest: 880a9b880d1b4d6f31901541483fa40c9c041dd0949c136e27ace3af3541ddfe
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libi/libidn2/libidn2-0_2.3.2-2_amd64.deb
+    digest: 0ac47209fe66a5906497d6fb1c76a2addaa8daa2becaa434b17d32b98dd057cc
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libi/libiec61883/libiec61883-0_1.2.0-4_amd64.deb
+    digest: 3594357265e80dea70f31e6c9b496130868697bbe32ed268ef6219debde71494
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/j/jbigkit/libjbig0_2.1-3.1-deepin1_amd64.deb
+    digest: 98eb75afc9dd66ec83f782a46aad59b0add9aad5ac521e91e35d606bb6313147
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libj/libjpeg-turbo/libjpeg62-turbo_2.1.5-2_amd64.deb
+    digest: 664abd1a931622f6d14cced9ea87f3b4f201adf9616e6ef2daf1b044903f699f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/j/json-c/libjson-c5_0.17-1_amd64.deb
+    digest: 4d8d2274f87aa27a15c420fabe43f7ce1c1ad16180fddba704ed107447db45ad
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/k/krb5/libk5crypto3_1.20.1-5_amd64.deb
+    digest: 203bda60f112a6eb51bfb431c1c9287ff1dbfd4f8bacb931b8ab5aacf52ed4e3
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/k/keyutils/libkeyutils1_1.6.3-3.1_amd64.deb
+    digest: 784e45679941a3e3de3d747f94f215a6fd4b3767aa0b92c4e66a43cc5d628d33
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/k/kmod/libkmod2_30+20230601-2.1_amd64.deb
+    digest: 74372a4857d86e72f473bb48ef74e28aa2ce59909d7f10d756bfc060b735c454
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/k/krb5/libkrb5-3_1.20.1-5_amd64.deb
+    digest: ae4f1183b97f1f376f8caac13b739865aba4b4b77bcfec8d9dd86c85e6977411
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/k/krb5/libkrb5support0_1.20.1-5_amd64.deb
+    digest: bdc056efb59abe666c17a028924d456a5660c45b68259d2525b9a0d08a8524a2
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/l/lerc/liblerc4_4.0.0+ds-3_amd64.deb
+    digest: 4024f109044643693dad079fce71b942ffba3bf3ec994d523130c33e776ea06e
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/l/lilv/liblilv-0-0_0.24.12-2_amd64.deb
+    digest: 0efb7ab23ebf1a16f538a85dfe97ede84bfd81b347e67248fad44ec1163172b7
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/l/lz4/liblz4-1_1.9.3-deepin_amd64.deb
+    digest: 9808e49cf41c4a38f0ff4f4de7080ae392682f3cea166abc079a26625c8233aa
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/x/xz-utils/liblzma-dev_5.4.5-0.3_amd64.deb
+    digest: 0e611c43cc8cee4b31dd530ef21f4efbb16caab257685a770b612146e18a6b8b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/x/xz-utils/liblzma5_5.4.5-0.3_amd64.deb
+    digest: e8051c2b44fa1cc020c12ef45f4918c1dd7595532af89df0c583b4b3f333fa56
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libm/libmd/libmd0_1.0.4-1_amd64.deb
+    digest: 755e2a59d76415999f46b0c307ade64df3788013286e902e2531e07ff58ca781
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/u/util-linux/libmount-dev_2.39.3-6deepin1_amd64.deb
+    digest: 5b8858e4a945774d52c40824a44668cd0b5e260c61b7f9bd6685fac1cad27698
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/u/util-linux/libmount1_2.39.3-6deepin1_amd64.deb
+    digest: a6c22f3b3c30d72424a05ee1c8874674d4e69b5dd703aa7b8936c7c21ab8c009
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/l/lame/libmp3lame0_3.100-6_amd64.deb
+    digest: 79b03dd6b90ece528ed2103c0ad41785290e6ef4d80991179c15f11992031bcb
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/m/mpg123/libmpg123-0_1.32.8-1deepin1_amd64.deb
+    digest: 8da2a921507884c5bb32854be4feaa1fcf5cd51d5d41b413e0f75982ad578a9f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libm/libmysofa/libmysofa1_1.2.1~dfsg0-1_amd64.deb
+    digest: 1c6cdb1193c443eb151333e709047eaaab206e22e48430fa59d298a0d7f37bb0
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/n/ncurses/libncurses6_6.4-4_amd64.deb
+    digest: c77179c2998bbc269c69339d73dbfa850063deda170ddacd8c4ae422af9c9a2c
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/n/ncurses/libncursesw6_6.4-4_amd64.deb
+    digest: 9993f7cfcc8cf37e6474d7b570faf1d5a19187af8a820f38cd5315461c765f2f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/n/nettle/libnettle8_3.7.3-1_amd64.deb
+    digest: d19dd4ebabccc00232223b414732c26b63d4ee67f4147ad5a105795f4514382a
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/n/nghttp2/libnghttp2-14_1.59.0-1deepin0_amd64.deb
+    digest: 9221a35b50f8c23ddb78e93ea4cc66ffaf96586d38503ce4b8b61f6995739847
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libn/libnsl/libnsl-dev_1.3.0-2_amd64.deb
+    digest: f17e04a96da2dcb260bf75ac750a63d238942ecd9550ce41cc3530774c3ae807
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libn/libnsl/libnsl2_1.3.0-2_amd64.deb
+    digest: 27219179fd316e3bdc7f9556d1852fcec175d13334b5aadf6274c19be98fb268
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libn/libnumber-compare-perl/libnumber-compare-perl_0.03-2_all.deb
+    digest: c37a63d53d982b9596a8e498e9ef95cf07cc245eaa2a8df8fc8546e82511fa7c
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libo/libogg/libogg0_1.3.5-3_amd64.deb
+    digest: 6de429751d24e788ebc92ecb3e4c24c49f6aca67e0a9584f999d387bc4cefd7b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/o/opencore-amr/libopencore-amrnb0_0.1.5-1_amd64.deb
+    digest: ed16bb492bba32dfcc90bbc65c77903c27354c907fcdbe96d86b35e3b3e836a2
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/o/opencore-amr/libopencore-amrwb0_0.1.5-1_amd64.deb
+    digest: 0edde1c02bf7dc2c1f7cc4c44996e7e7ac73bd89e457ccec2d0a29d66ab0dbf1
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/o/opus/libopus0_1.3.1-3_amd64.deb
+    digest: 5ac61126fb5114217854990fdf86796f2b8a4c8fb11a29f369e76dd865a42936
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/o/orc/liborc-0.4-0_0.4.32-2_amd64.deb
+    digest: 45de2342be7747f5d54d521409709d3207a7f6e16ab44aa9a8242b0faf898cd7
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/p11-kit/libp11-kit0_0.25.5-2_amd64.deb
+    digest: 3aae0a4770a313f4092d89d9603472fe9dbc0bfc9e69230868c168b3b30f860a
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pam/libpam-modules-bin_1.5.3-7_amd64.deb
+    digest: 99795f56f472c634ed363a5640756161fd68f39e9ad617943f802dabc4bb84f9
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pam/libpam-modules_1.5.3-7_amd64.deb
+    digest: ad17b289619f3c370515da12ea9302faba965168f6ced08cd68ecb2e207985b7
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pam/libpam-runtime_1.5.3-7_all.deb
+    digest: 28a2789917401d06fff5c31991bf27fc808626c5c086219df63cfe1acf978b97
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/systemd/libpam-systemd_255.2-4deepin3_amd64.deb
+    digest: cb88f03525ee38b0024ee53bcbe844d005a4b802be5ae307e27b4da49ccbc289
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pam/libpam0g_1.5.3-7_amd64.deb
+    digest: 8d6d9dad048874967ea0b2d95f7370b737916ca94cf72f08d4ca2cd376e83f80
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pango1.0/libpango-1.0-0_1.52.2+ds-1_amd64.deb
+    digest: 578da94d3d5cdecfa7206866fa668e3d34ab338366395dc4665501e61d1b7a23
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pango1.0/libpangocairo-1.0-0_1.52.2+ds-1_amd64.deb
+    digest: 79abcf83edc6c1a9dc59f987374c9e980cf2ac8d99ef2cc5f0905b481ef7e113
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pango1.0/libpangoft2-1.0-0_1.52.2+ds-1_amd64.deb
+    digest: 2102f48725fd401cf12395a26f261386483bb5516b280f8ab35e34da3df5b107
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pcre2/libpcre2-16-0_10.39-2_amd64.deb
+    digest: 1219e0d46f5c584323ad7e41c6fb39cdb8c6ed242a64913b7dadf0c557d84b6b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pcre2/libpcre2-32-0_10.39-2_amd64.deb
+    digest: 313cb3eed5be9793ce6db51292ca3d08334e9799856d88c085d268a4a264a586
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pcre2/libpcre2-8-0_10.39-2_amd64.deb
+    digest: 26ba66e349a9d46978d24e5b165c327e1ef51007770c43a3a49eb35b5fe0310e
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pcre2/libpcre2-dev_10.39-2_amd64.deb
+    digest: b2a505ec6ef461644bf946949dc7def6a22ae8627c59ede2a82e9f77500eb856
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pcre2/libpcre2-posix3_10.39-2_amd64.deb
+    digest: f1d82802bdf71d13b7fe0b95aa0efbef3d4c661920629686170eabaeb8f4ecff
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/perl/libperl5.36_5.36.0-10_amd64.deb
+    digest: 1cca8c85872210489e92326ca7fda2fcc8d9b37a085cd1a0c87d54aa685118e8
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pipewire/libpipewire-0.3-0_1.2.5-1deepin4_amd64.deb
+    digest: c24e1a8282313f15846138dc43c3ac3c655b0035e43c52701c33d0a00cdd9b64
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pipewire/libpipewire-0.3-modules_1.2.5-1deepin4_amd64.deb
+    digest: 59f4e9d3423aad1701f923874c0346113d3db3336463ee5b205512e6be8ddbde
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pixman/libpixman-1-0_0.42.2-1_amd64.deb
+    digest: 61dfa0134fe4038b88e3e64081f7340277297771d3a7c1667277cb9b992d2d0a
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pkgconf/libpkgconf3_1.8.1-4_amd64.deb
+    digest: e4677f42eb04cd63106e75ef1c008595a5b306129d6fdd58171a4b3732f2aca3
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libp/libpng1.6/libpng16-16_1.6.40-2_amd64.deb
+    digest: 3327085ceef26f45c52af3462d6e506721371991a983b398e2fb741c2c48ab29
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libp/libproxy/libproxy1v5_0.4.18-1.2deepin0_amd64.deb
+    digest: 01182c680d643f335f63ae38016fef3d5f097ab718789f9aef79de42f00517d9
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libp/libpsl/libpsl5_0.21.0-1.2_amd64.deb
+    digest: 7a00b4f3ca191e7a887cbfc6b0ed619493bf5344b85c8e823577b115ec34f738
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pulseaudio/libpulse0_16.1+dfsg1-5.1deepin1_amd64.deb
+    digest: ad40b445b798ba098f7191b90a5e949f091b039bcb5961d271fc9715f3f2053d
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/python3-defaults/libpython3-stdlib_3.12.1-1deepin1_amd64.deb
+    digest: 7611dfe764b5a109e1fa516270c304d451aa2980190c480a83b90207a6b84158
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/python3.12/libpython3.12-minimal_3.12.4-0deepin1_amd64.deb
+    digest: fef2ce003db442a002e3c874de33656cae3ef4a6d00a2a72e267b386df647945
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/python3.12/libpython3.12-stdlib_3.12.4-0deepin1_amd64.deb
+    digest: 192a53ec08eb4b356fcc157b8ba97a4d2e1e4a2d8e8d32e37a9d70ce5ff2ea22
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libr/libraw1394/libraw1394-11_2.1.2-2_amd64.deb
+    digest: 1e6954caad6e844a163ddfedaf5e84b4f2d3bb1f7f15741d351dd108ccdc6179
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/r/readline/libreadline8_8.2-3_amd64.deb
+    digest: d7d4a492aa183701aad09f9ae4e156df8d4d5e336f40502f51c72cb5135cc296
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/r/roc-toolkit/libroc0.3_0.3.0+dfsg-5_amd64.deb
+    digest: ba13daef0a7a21470b4260a5fdfbdc077f32ad34e8b1d6992abf00ffc0eb713e
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libs/libseccomp/libseccomp2_2.5.4-2deepin1+rb1_amd64.deb
+    digest: 8521b2d3819cab1ca6c752bfff3a35a7e57cd57f5acb0680b8dcef583723c54f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libs/libselinux/libselinux1-dev_3.5-1deepin2_amd64.deb
+    digest: ccc4c248f64dbef5e3b9711491fc93a903e4fa15d1616f5ee1bfa0a5cd82c73b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libs/libselinux/libselinux1_3.5-1deepin2_amd64.deb
+    digest: 6702f261991679f2b5fb4643acf010396a12d3994e26dd568628f433e6f0f129
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libs/libsemanage/libsemanage-common_3.5-1deepin1_all.deb
+    digest: c4fe4277d3df3d1bbf39083659701e5f4f9857e612ef7f1185e45eedc8f27047
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libs/libsemanage/libsemanage2_3.5-1deepin1_amd64.deb
+    digest: 6f69d2a20ebe5bb06552ccc0e9c9e71d3d16bb936271ff1c1526a9a8ef35c253
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libs/libsepol/libsepol-dev_3.5-2_amd64.deb
+    digest: 4a1b7141086a540294dfc0df7eb707f2ef1e57d2a2f4b30f80821164d0f97b7b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libs/libsepol/libsepol2_3.5-2_amd64.deb
+    digest: 47738eed5444661ac0a8a8f2ce6fee7bcd448cfab2701340c51464cf532ccbc9
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/serd/libserd-0-0_0.30.10-2_amd64.deb
+    digest: 3fa4be028ff744b1440c8663795323c01e29f109d3c3f42f61394b917778ac97
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libw/libwebp/libsharpyuv0_1.3.2-0.2_amd64.deb
+    digest: 9da48196bd083c4749d1b4814a15780fdfa5a962ce3c19c5abfe0fa98e4e870e
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libs/libshout/libshout3_2.4.5-1_amd64.deb
+    digest: b7d0c8f00e6353ddecc9429a2687cf123f251b5a0500336a328b65a4ce5d4042
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libs/libsigc++-2.0/libsigc++-2.0-0v5_2.10.8-1_amd64.deb
+    digest: e678b0179b5c4961f93ab3917213d8ac57959bd68e00b65bba604332bc0cd0a9
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/slang2/libslang2_2.3.2-5_amd64.deb
+    digest: d0d482e555d5fb78b0606cb2a54a24f071a5389f216f348f4d210e2b57ecf4ed
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/u/util-linux/libsmartcols1_2.39.3-6deepin1_amd64.deb
+    digest: ea04242d62ab7a29ba1ddfdc3efbc985e416c14e6a64b608a0608743dbaf5ab3
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libs/libsndfile/libsndfile1_1.0.31-2_amd64.deb
+    digest: 91c58af0419a33af2baa57684a5a85ca6c0106cf6f5d80f62341b0280e6284cd
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/sord/libsord-0-0_0.16.14+git221008-1_amd64.deb
+    digest: 10dcd94952de8e379983b3ac597802fccf58aa0f11b23dbe03f406a71e08135e
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libs/libsoup3/libsoup-3.0-0_3.4.3-1_amd64.deb
+    digest: 9888c53cf0e3cedfe9c8f06e3e08d225b063843874a74f9d74518cb25fc182e6
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libs/libsoup3/libsoup-3.0-common_3.4.3-1_all.deb
+    digest: 1591543d840396ea47f24a2b3287dabc0a50eeb085e07f0807cd99a4ca992f13
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pipewire/libspa-0.2-modules_1.2.5-1deepin4_amd64.deb
+    digest: e45e677a39876ba4c167abf4a5c7ef5e3b45051900e1f4f484a90483805a2fb5
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/speex/libspeex1_1.2.1-2_amd64.deb
+    digest: d550e0dca380616b0d3f2ee0731235fb2e8d5ae6896d2f1d90b7d8e419ed8f33
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/speexdsp/libspeexdsp1_1.2.1-1_amd64.deb
+    digest: 589b7f4b78361f1895b3e51c716a3f127efc91591dad168facc81c1d35716843
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/sqlite3/libsqlite3-0_3.46.1-1_amd64.deb
+    digest: 73029e73a746e8723afe8e98469774dc3de39cc7ee59a5ad1e9dc4745c11f55a
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/sratom/libsratom-0-0_0.6.8-1_amd64.deb
+    digest: 0c389661679c23548729898096cef966a575929c9a8630d2da565169345c215e
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/o/openssl/libssl3_3.2.0-2deepin2_amd64.deb
+    digest: 8b86b65fd2480dc342d16a1dd62da1cdb955ba34d830d245c67ed3857680dbec
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/g/gcc-13/libstdc++6_13.2.0-3deepin3_amd64.deb
+    digest: b58b4f44e2a475c39749808c5b7f6bafbdd50e25e6b59dff28ac68ed1603234b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/sysprof/libsysprof-capture-4-dev_46.0-1_amd64.deb
+    digest: bbaacdcbf341e500cd8fbe0dfb75fc98156b0a5abf94e43105bb5f745c3168dd
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/systemd/libsystemd-shared_255.2-4deepin3_amd64.deb
+    digest: 0c8b3dab78fd0ab8e33ee5775b86edac0dbc68b2c581b7f0c011a0c0d62f2124
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/systemd/libsystemd0_255.2-4deepin3_amd64.deb
+    digest: 2d65df5f46dba24e2cd25605b715ea7bf4b1a23ccf2fb789f50e4a1d9c0586f4
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/t/taglib/libtag1v5-vanilla_1.12-1deepin0_amd64.deb
+    digest: 4fdd6319d141f7950b7a0581b38a34f9a2e63f35a8ff38b2ed13a7a77e80e90e
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/t/taglib/libtag1v5_1.12-1deepin0_amd64.deb
+    digest: 6981b6a6a11c8e04e81c0e149166261c159f4860055f0dd25e3ed3cdffd14fa7
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libt/libtasn1-6/libtasn1-6_4.18.0-4_amd64.deb
+    digest: 3f24f7a181f374bd6623bfdc7781e2cee5d948361a456d2f6216aa4ba5c44a2e
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libt/libtext-glob-perl/libtext-glob-perl_0.11-2_all.deb
+    digest: 2e8cf563b486b56b4c875db16a37e5e24168085510b8bfd167efc8367cdcad1f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libt/libthai/libthai-data_0.1.29-1_all.deb
+    digest: 3a87af58b0b3becac7062da11264d083cd68190e7dd421c2cbd00da8841cfa25
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libt/libthai/libthai0_0.1.29-1_amd64.deb
+    digest: f0bd45223660d1b5b5a0d8e34637cda429f1600a407c8f7970293cbb27c4e165
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libt/libtheora/libtheora0_1.1.1+dfsg.1-15_amd64.deb
+    digest: 6cdc119b8a9f7a413a239e026378793bfc6b6487295db146fbe992994e420097
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/t/tiff/libtiff6_4.5.1+git230720-1deepin0_amd64.deb
+    digest: 5d0206a7996e6eca94109bc0c78fc968a5dbc8c46050e43f82cadcff0331823f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/n/ncurses/libtinfo6_6.4-4_amd64.deb
+    digest: bb49775a3e3df73dbef25027937ddb2f714f262e8cb859ef228d26b3c146b6eb
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libt/libtirpc/libtirpc-common_1.3.2-2_all.deb
+    digest: 74bddc18e3289947b20653433e82025873f5679ccba52f258ca4912e435a09ee
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libt/libtirpc/libtirpc-dev_1.3.2-2_amd64.deb
+    digest: 801b243dc8b3ebecf2be9efc9ca69cd987f26830accede2e7142210c5640ee91
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libt/libtirpc/libtirpc3_1.3.2-2_amd64.deb
+    digest: 4ded57b843774f3c65449d6ad7bed6efb97bf94cdb4aadb8554fe5cc12210291
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/t/twolame/libtwolame0_0.4.0-2_amd64.deb
+    digest: fdc576e8da6c75367f25d569902e6217db30f61d7865f35d43a53d824856c974
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/systemd/libudev1_255.2-4deepin3_amd64.deb
+    digest: 540b14570f244649ac7cc75094b0bb9ad8a16287747bc53b53cb85cf4404aedd
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libu/libunistring/libunistring2_0.9.10-6_amd64.deb
+    digest: dfa507aa9982a3ba8cca86bc571d47e0c30d8adadc833e16cba4edd6e4c68155
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libu/libunwind/libunwind-dev_1.7.2-0deepin2_amd64.deb
+    digest: 65e2def5c6962caf980f33f35f9a3af69b48ea2b30f0ca3e2591f2f4e804579b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libu/libunwind/libunwind8_1.7.2-0deepin2_amd64.deb
+    digest: 56d808c8a417c5e6cc2357f19ffe6c6ee1393d9428d4de505f850eb85c371315
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/u/util-linux/libuuid1_2.39.3-6deepin1_amd64.deb
+    digest: 8cc7e43d37649c4ee3595f33589716d7eea70ea4ccde666039b2b1d01a4f8413
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libu/libuv1/libuv1_1.48.0-1_amd64.deb
+    digest: 65e66fea576a758f4d2e32ecd73fe9f68b3b2a6d1baf21279f1c1ec19558a6e9
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/v/v4l-utils/libv4l-0_1.26.1-3deepin0_amd64.deb
+    digest: aa9439fb952fd1ff2027164d4c6c91d6fda3aa6aab8e798b6ca93d9ab08eb257
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/v/v4l-utils/libv4lconvert0_1.26.1-3deepin0_amd64.deb
+    digest: 2d492ea2d77af93beaed3bdc2d24475379bd21ff9a8fad13835a626ce7f1edf4
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libv/libvisual/libvisual-0.4-0_0.4.0-17_amd64.deb
+    digest: d8d2635755c1d7f682572b1e440495f0234dbaa87c003431e3e5177d7679e7af
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libv/libvorbis/libvorbis0a_1.3.7-1_amd64.deb
+    digest: 9a3210b3d90c53ad6b726813d03dee23f08fdfb6d6be3a7b196f8a08106fa729
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libv/libvorbis/libvorbisenc2_1.3.7-1_amd64.deb
+    digest: 64ce2a476cd54927f711b9947ed1f49944e2960cad96be386d139495d8da2304
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libv/libvpx/libvpx7_1.11.0-2_amd64.deb
+    digest: 2f51812db0c74d577fc30293fd86ab40be513a457c754a491512bca9b140715e
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/w/wavpack/libwavpack1_5.4.0-1_amd64.deb
+    digest: 4ac1acbfdd1a76a3e42bc193729cb09e7daab9e076223aed2400817b652877f4
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libw/libwebp/libwebp7_1.3.2-0.2_amd64.deb
+    digest: f2271cabfa4d4847bef8a522e2775d4f9c09a2560911df4779a7cc06d650eec6
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/w/webrtc-audio-processing/libwebrtc-audio-processing1_0.3-deepin1_amd64.deb
+    digest: 8cda96bfd71a79594b03f94ee729891a2052fcbc40f58987bcd1762dcb68281f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libx11/libx11-6_1.8.7-1_amd64.deb
+    digest: e21e2b12e455664dd8b6ceb201d853c120dea77e0703c95545a3176708ae699f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libx11/libx11-data_1.8.7-1_all.deb
+    digest: 400aaa7eaab268850d8c2c512474228204d47774f2aac79cef29d1c125e0c656
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libx11/libx11-xcb1_1.8.7-1_amd64.deb
+    digest: 68341e587a81b03655ff00f0cc9ba543181285504475e66b422308b1bdd30e5f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxau/libxau6_1.0.9-1_amd64.deb
+    digest: 0d55ab9b5634a7b635ebe263526719f3c5c925d847c0f4cb927bc61584cf269b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxcb/libxcb-render0_1.15-1_amd64.deb
+    digest: ee032e334e48cdd15385fccde4b4baa399775d3a53aafa3a86e621012a47dae5
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxcb/libxcb-shm0_1.15-1_amd64.deb
+    digest: 764d8a7b72cfcd3a4e3f1abb7b19c0af24e307a5595be04f06184b3817df8b44
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxcb/libxcb1_1.15-1_amd64.deb
+    digest: 7472219060504d69f13cea545dde78da4b42455c3018f211d161315c7d8aa9f1
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxdamage/libxdamage1_1.1.5-2_amd64.deb
+    digest: 493c0ed32758cde152268d59cdddbf1ea4edccbda81b93a6263517698383b520
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxdmcp/libxdmcp6_1.1.2-3_amd64.deb
+    digest: ebcc2294de7d5fb853478096435000c2c262f0cc27bb6e9cbd1455984e58a72f
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxext/libxext6_1.3.4-1_amd64.deb
+    digest: 59a91d747d250b40897b850d0aa7477a92aa671991287137875b1475a7708a85
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxfixes/libxfixes3_6.0.0-1_amd64.deb
+    digest: e4234708c3f3631d7f361a1429d8b9de9b8acc81244f23b8df64d599b62fcecd
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxi/libxi6_1.8.1-1_amd64.deb
+    digest: d8a2f9bd5ee841567db6b5aae74edb48c2fc11be2fd6354dc83cfca423905aa7
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxml++2.6/libxml++2.6-2v5_2.40.1-3deepin0_amd64.deb
+    digest: 2fd8aa4a08981399596f22c1d650f8e4c7cdd0e496cad02232099dda66d86403
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxml2/libxml2_2.9.14+dfsg-1.3+rb2_amd64.deb
+    digest: 36b25f4121dd6765f49a5249a94f675139c4fbaae04be5ccc1ac3ae59f1e40c2
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxrender/libxrender1_0.9.10-1_amd64.deb
+    digest: 3fe11eeffd33fee74287c85002204c97b9c624d84a79862e4ca5d37c7307253a
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxtst/libxtst6_1.2.3-1_amd64.deb
+    digest: a434105d580d5958abdc4b0256968ffda0d06de7923250ec7518173e11271fbe
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libx/libxv/libxv1_1.0.11-1_amd64.deb
+    digest: 30a78145871e68591c84a2edbd4d817e4a0767dd14dbba0b6cfe904ead1a0ada
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libz/libzstd/libzstd-dev_1.5.6+dfsg-1_amd64.deb
+    digest: 92ec406d537e08271b66dbcf10d5730fff8eee067379c9fce7e74e4c53c6b4c3
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/libz/libzstd/libzstd1_1.5.6+dfsg-1_amd64.deb
+    digest: 2ea949de45dfe27832a6e7816a03103dae4ed45ba2b380669de5d5c89c361cc5
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/l/linux-upstream/linux-libc-dev_23.01.01.14+STE_amd64.deb
+    digest: 6bdeb3308841d5a40930eeea4214170dcd222ff0394cda1e4d27aff5c212ba18
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/m/mailcap/mailcap_3.70_all.deb
+    digest: 7ca67d118c03eaf58346eb1e676ff16f4d1aa5252a8cc6b5b3b1ed44556180f1
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/m/media-types/media-types_4.0.0_all.deb
+    digest: cd124053950ab8b0373203bceb7eab841791017daf1d50db2ece09e4da52406a
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/m/mime-support/mime-support_3.66_all.deb
+    digest: 20294deda4378616c2b48614ee226731ec09663c3497c35a467e8ea5fa03f16a
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/u/util-linux/mount_2.39.3-6deepin1_amd64.deb
+    digest: 1bf6ba7c9a55cd2793d59059bf1d241dd298ea1c17aa3a5495a217201492b69b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/n/netbase/netbase_6.4_all.deb
+    digest: 5fd05a5d63864b96453ba55a4c5efa287b8e7e53fbd833e7a944e066d30e1eb1
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/shadow/passwd_4.14+dfsg1-0deepin4_amd64.deb
+    digest: 66fad35a6acb896c7243ad5d1570cef3d4d27bbcefd7318b5667fc11447a9a8a
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/perl/perl-base_5.36.0-10_amd64.deb
+    digest: 50fa4a0bbefde86abf9ffd1fa092ee82af23ccc8f65b5b952526dc885c943169
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/perl/perl-modules-5.36_5.36.0-10_all.deb
+    digest: 907542b9a413bd0276d5ef94fef77083715a692fd33c52ece44d11fff847bab0
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/perl/perl_5.36.0-10_amd64.deb
+    digest: 59d13b610350339f3b273097011a3db6db60a99d587bf04eeb881c1a34168390
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pipewire/pipewire-bin_1.2.5-1deepin4_amd64.deb
+    digest: 2836d86521db4654201a92b0f099aef467f74030fc06a6bbea959b0f11d4a126
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pipewire/pipewire_1.2.5-1deepin4_amd64.deb
+    digest: cf4a9b2e7613b47c9c3026f3c20938edc35cc02bbe123c7d50f109009395c766
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pkgconf/pkgconf-bin_1.8.1-4_amd64.deb
+    digest: 6d6e880665acf6c1600e779d00259242e7f58e957dda43d760b65df472ddbfbd
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/pkgconf/pkgconf_1.8.1-4_amd64.deb
+    digest: 3e8dd26853b621b7b1ef82533bfb3bfa0c9ba07f581df727cb3271e7a35edf33
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/python3-defaults/python3-minimal_3.12.1-1deepin1_amd64.deb
+    digest: 44712ddb4dd007c7916d3bb3e2539d0853251b4672e6b76d057733fcfb26fe03
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/python-packaging/python3-packaging_24.0-1_all.deb
+    digest: acf9e0347764b07624b219b64fa7721705d6eeea5a98871f892aff3ab0293ae4
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/python3.12/python3.12-minimal_3.12.4-0deepin1_amd64.deb
+    digest: ad3ff722bfadedaeea33599b5ee43e88f7cb0c3a5f9185348058d0ddb7c9830e
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/python3.12/python3.12_3.12.4-0deepin1_amd64.deb
+    digest: 5cf3eca309d9562d2c4b3102dc4fe89db6f670e634066d70f1d3c0af2843c852
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/p/python3-defaults/python3_3.12.1-1deepin1_amd64.deb
+    digest: 3e3840ef15b198763d57c130ef9675a46fbdf534f2d5d721f8ddf91b6d743c1c
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/q/qemu/qemu-user-static_8.2.0+ds-1deepin8_amd64.deb
+    digest: ff4dbe59e1fe5063f9b75fa5bebdb2fe143b6b0f945771a847ea1d7a3aed4c44
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/q/qemu/qemu-user_8.2.0+ds-1deepin8_amd64.deb
+    digest: efde03e80ec9484fca557ed25b4d1e22b4a92068e9e056b60da7108fc5b0ef05
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/r/readline/readline-common_8.2-3_all.deb
+    digest: 35fe59faceb8d9def8b6aa664e091eac8444887bc1f33ba2cf22099c3646e7bd
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/r/rpcsvc-proto/rpcsvc-proto_1.4.2-4_amd64.deb
+    digest: 76a363bd052b40394f829486c820967c1386539c2fbdd7aa2e77430132fccab0
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/shared-mime-info/shared-mime-info_2.2-1_amd64.deb
+    digest: 545413a218d5cd7e3103b5e277419a7e67044c95f83ed7fb700c6c99ba523c02
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/systemd/systemd-dev_255.2-4deepin3_all.deb
+    digest: 04adbe93c28391ba986f20b138a0396c74f0c8be52f59141e0a64d375a27ed43
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/systemd/systemd-sysv_255.2-4deepin3_amd64.deb
+    digest: 135e67bd005cfb79ae3499d5b98b7cb0b79417d5e72b33a4f0a2f1b150b400a0
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/s/systemd/systemd_255.2-4deepin3_amd64.deb
+    digest: 2a63852367f6adba6f2cfb2fa0a6e9a469605c5d2f5d13211a071e9807e7e8a5
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/t/tar/tar_1.35+dfsg-3_amd64.deb
+    digest: ee27ac0010bb1525067edda7b6b86110a00550232fb154f87491dbc3a3a2c8ff
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/t/tzdata/tzdata_2023d-1deepin1_all.deb
+    digest: fe503c524801260208482a1dfc061e79c2a7450111dd90f88ed40d70ac935832
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/u/usrmerge/usrmerge_38_all.deb
+    digest: fdc636985788b18a04cd15941a111fb2a73d3b56cf58c689b918345e6f003161
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/u/util-linux/uuid-dev_2.39.3-6deepin1_amd64.deb
+    digest: 0ab4e3eb8b8b386bfb3718ba57f67acd57f07ee2f1ceade1beda197c0ab4af03
   - kind: file
     url: https://pools.uniontech.com/deepin-beige/pool/main/w/wayland-protocols/wayland-protocols_1.36-1deepin1_all.deb
     digest: ab712636f1445df565a092a03bb1fb5eea64b5d69f21bfd44807e50f1494db60
   - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/x/xorg/x11-common_7.7+23-deepin1_all.deb
+    digest: 9a7643db11023a8bec126312edec4b1b7357b93416bdfbaf9b0cb8bc04506d49
+  - kind: file
     url: https://pools.uniontech.com/deepin-beige/pool/main/x/xdg-desktop-portal/xdg-desktop-portal-dev_1.18.4-1_all.deb
     digest: 2b19ed624766fc9fa848ed934ad287c4c0b567e55ac726767630b71fba1a9ec9
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/x/xfonts-encodings/xfonts-encodings_1.0.4-2.1deepin1_all.deb
+    digest: 07d68c68eeeca62cea0558b4f0bc25896bd82fddfa6c4b02693ee0adc4bde224
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/x/xfonts-utils/xfonts-utils_7.7+6-deepin_amd64.deb
+    digest: 5a83d9ea46a19255d820eebcf8c6a8a08339e1e37ad11ac3b8d89d1dcb719e13
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/z/zlib/zlib1g-dev_1.3.dfsg+really1.3.1-1deepin1_amd64.deb
+    digest: 6d5bf0445a25257bc75a612224498ecddda2fa56edc8d17af5c4bdd2713edd4b
+  - kind: file
+    url: https://pools.uniontech.com/deepin-beige/pool/main/z/zlib/zlib1g_1.3.dfsg+really1.3.1-1deepin1_amd64.deb
+    digest: d0bab03ed3981fbe2bae8799a3c45d9a3b1561ae3d7bcffe37f235d573ae24c6

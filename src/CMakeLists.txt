@@ -19,7 +19,8 @@ target_link_libraries(
   Qt::Widgets
   Qt::GuiPrivate
   Qt::WaylandClient
-  Wayland::Client)
+  Wayland::Client
+  PkgConfig::GSTREAMER)
 
 include(GNUInstallDirs)
 install(TARGETS portal-demo DESTINATION ${CMAKE_INSTALL_FULL_BINDIR})

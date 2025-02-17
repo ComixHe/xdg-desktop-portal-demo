@@ -1,0 +1,8 @@
+Package: qemu-user-static
+Package: qemu-user
+Package: systemd
+Package: systemd-sysv
+Package: mount
+Package: libpam-systemd
+Package: fonts-noto-core
+Package: dbus-user-session

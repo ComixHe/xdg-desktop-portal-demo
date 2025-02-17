@@ -13,5 +13,6 @@ find_package(Wayland 1.23 REQUIRED COMPONENTS Client)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(WaylandProtocols REQUIRED wayland-protocols>=1.36)
 pkg_check_modules(XDGDesktopPortal REQUIRED xdg-desktop-portal>=1.18.4)
+pkg_check_modules(GSTREAMER REQUIRED IMPORTED_TARGET gstreamer-1.0)
 
 add_subdirectory(src)
