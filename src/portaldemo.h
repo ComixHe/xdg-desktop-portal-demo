@@ -22,6 +22,9 @@ public Q_SLOTS:
   void requestDeviceAccess(const QStringList &devices);
   void gotResponseDeviceAccess(uint32_t response, QVariantMap result);
 
+  void requestOpenFile();
+  void gotResponseOpenFile(uint32_t response, QVariantMap result);
+
 private:
   [[nodiscard]] QString parentWindowId() const;
   [[nodiscard]] QString getRequestToken() {

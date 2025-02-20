@@ -14,21 +14,31 @@
 #include <qdbusextratypes.h>
 #include <qdbuspendingreply.h>
 
-inline static const char *desktopPortalService() {
+namespace {
+
+inline const char *desktopPortalService() {
   return "org.freedesktop.portal.Desktop";
 }
-inline static const char *desktopPortalPath() {
+
+inline const char *desktopPortalPath() {
   return "/org/freedesktop/portal/desktop";
 }
-inline static const char *portalRequestInterface() {
+
+inline const char *portalRequestInterface() {
   return "org.freedesktop.portal.Request";
 }
 
-inline static const char *portalCameraInterface() {
+inline const char *portalCameraInterface() {
   return "org.freedesktop.portal.Camera";
 }
 
-inline static const char *portalResponseSignal() { return "Response"; }
+inline const char *portalFileChooserInterface() {
+  return "org.freedesktop.portal.FileChooser";
+}
+
+inline const char *portalResponseSignal() { return "Response"; }
+
+} // namespace
 
 QString PortalDemo::parentWindowId() const {
   auto name = QGuiApplication::platformName();
@@ -60,6 +70,11 @@ PortalDemo::PortalDemo()
   connect(camButton, &QPushButton::clicked, this,
           &PortalDemo::requestAccessCamera);
   vert->addWidget(camButton);
+
+  auto *openBtn = new QPushButton();
+  openBtn->setText("Open File...");
+  connect(openBtn, &QPushButton::clicked, this, &PortalDemo::requestOpenFile);
+  vert->addWidget(openBtn);
 
   auto *hori = new QHBoxLayout();
   auto *box = new QComboBox();
@@ -289,4 +304,45 @@ int PortalDemo::requestOpenPipeWireRemote() {
   }
 
   return fd;
+}
+
+void PortalDemo::requestOpenFile() {
+  auto message = QDBusMessage::createMethodCall(
+      desktopPortalService(), desktopPortalPath(), portalFileChooserInterface(),
+      "OpenFile");
+  message.setArguments({parentWindowId(), "open file...",
+                        QVariantMap{{"handle_token", getRequestToken()},
+                                    {"accept_label", "open"},
+                                    {"multiple", true}}});
+  auto ret = QDBusConnection::sessionBus().asyncCall(message);
+  auto *watcher = new QDBusPendingCallWatcher(ret);
+  connect(watcher, &QDBusPendingCallWatcher::finished, this,
+          [this](QDBusPendingCallWatcher *watcher) {
+            watcher->deleteLater();
+            QDBusPendingReply<QDBusObjectPath> reply = watcher->reply();
+            if (reply.isError()) {
+              qCritical() << "Error: " << watcher->error().message();
+              return;
+            }
+            qInfo() << "request path:" << reply.value().path();
+
+            QDBusConnection::sessionBus().connect(
+                desktopPortalService(), reply.value().path(),
+                portalRequestInterface(), portalResponseSignal(), this,
+                SLOT(gotResponseOpenFile(uint32_t, QVariantMap)));
+          });
+}
+
+void PortalDemo::gotResponseOpenFile(uint32_t response, QVariantMap result) {
+  if (response == 1) {
+    qInfo() << "user cancelled";
+    return;
+  }
+
+  if (response == 2) {
+    qInfo() << "ended in some other way";
+    return;
+  }
+
+  qInfo() << "chosen files:" << result.value("uris").toStringList();
 }

@@ -3,7 +3,7 @@ version: "1"
 package:
   id: org.deepin.portal-demo
   name: linglong portal demo
-  version: 0.0.0.1
+  version: 0.0.0.2
   kind: app
   description: |
     xdg desktop protal demo.
