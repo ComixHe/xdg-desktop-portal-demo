@@ -1,5 +1,4 @@
 version: "1"
-
 package:
   id: org.deepin.portal-demo
   name: linglong portal demo
@@ -7,13 +6,10 @@ package:
   kind: app
   description: |
     xdg desktop protal demo.
-
 base: org.deepin.base/25.2.0
 runtime: org.deepin.runtime.dtk/25.2.0
-
 command:
   - start.sh
-
 build: |
   set -x
   cmake -B linglong-build -DCMAKE_INSTALL_PREFIX="${PREFIX}" -DCMAKE_BUILD_TYPE=Release
@@ -21,11 +17,10 @@ build: |
   cmake --install linglong-build
   echo "#!/usr/bin/env bash" >> start.sh
   echo -e "export GST_PLUGIN_PATH=/opt/apps/${LINGLONG_APPID}/files/lib/${TRIPLET}/gstreamer-1.0" >> start.sh
+  echo -e "export QT_QPA_PLATFORMTHEME=xdgdesktopportal" >> start.sh
   echo "exec /opt/apps/org.deepin.portal-demo/files/bin/portal-demo" >> start.sh
   chmod +x start.sh
   mv start.sh "${PREFIX}"/bin
-
 buildext:
   apt:
-    build_depends: ["wayland-protocols", "xdg-desktop-portal-dev","libgstreamer1.0-dev","gstreamer1.0-pipewire", "gstreamer1.0-plugins-base","gstreamer1.0-plugins-good","gstreamer1.0-x"]
-
+    build_depends: ["wayland-protocols", "xdg-desktop-portal-dev", "libgstreamer1.0-dev", "gstreamer1.0-pipewire", "gstreamer1.0-plugins-base", "gstreamer1.0-plugins-good", "gstreamer1.0-x"]
